@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, getByLabelText } from '@testing-library/react';
+import { render, fireEvent, getByLabelText, wait } from '@testing-library/react';
 import ContactForm from "./components/ContactForm";
 
 test('Does contact form render?', () => {
@@ -7,15 +7,37 @@ test('Does contact form render?', () => {
     console.log("Contact form renders!")
 });
 
-test('Can the forms submit?'), () => {
-    const {getByText, getByTestId} = render(<ContactForm/>);
+test('Can the forms submit?', async () => {
+    const {getByLabelText, getByTestId, findByText} = render(<ContactForm />);
 
-    const firstName = getByText(/first name*/i);
-    const lastName = getByText(/last name*/i);
-    const email = getByText(/email*/i);
-    const submit = getByTestId(/submitTestId/i);
+    const firstName = getByLabelText(/first name/i);
+    const lastName = getByLabelText(/last name/i);
+    const email = getByLabelText(/email/i);
+    const message = getByLabelText(/message/i);
+    const submit = getByTestId('submit');
 
     fireEvent.change(firstName, {
-        target: {name: 'firstName', value: 'Emma'
-    }});
-}
+        target: { name: 'firstName', value: 'ab'}
+    });
+
+    fireEvent.change(lastName, {
+        target: {name: 'lastName', value: 'def'}
+    });
+
+    fireEvent.change(email, {
+        target: {name: 'email', value: 'emma@gmail.com'}
+    });
+
+    fireEvent.change(message, {
+        target: {name: 'message', value: 'beep boop'}
+    });
+
+    fireEvent.click(submit);
+
+    await findByText(/ab/i);
+    await findByText(/def/i);
+    await findByText(/emma@gmail.com/i);
+    await findByText(/beep boop/i);
+
+    console.log("It submits");
+})
